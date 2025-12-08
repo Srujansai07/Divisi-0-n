@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  --background: #0a0a0f;
+  --primary: #8b5cf6;
+  --accent: #06b6d4;
+}
+
+body {
+  background: var(--background);
+  color: white;
+  font-family: 'Inter', sans-serif;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+}
+
+.btn-primary {
+  @apply bg-gradient-to-r from-primary to-accent px-6 py-3 rounded-lg font-semibold text-white transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/25;
+}
+
+.btn-secondary {
+  @apply border border-white/20 px-6 py-3 rounded-lg font-semibold text-white transition-all hover:bg-white/10;
+}
