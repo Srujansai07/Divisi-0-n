@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ===== USER & AUTH =====
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String?
+  avatarUrl String?
+  projects  Project[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// ===== PROJECT (User's App Journey) =====
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @db.Text
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Track selection
+  trackType TrackType @default(SPEED)
+  budget    BudgetTier @default(LOW)
+
+  // Progress tracking
+  currentPhase Int @default(1)
+  currentStep  Int @default(1)
+
+  // Generated content
+  prd       Json?
+  techStack Json?
+
+  // Steps completed
+  completedSteps CompletedStep[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ===== COMPLETED STEPS =====
+model CompletedStep {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  phaseId    Int
+  subheading Int
+  stepId     Int
+  stepType   StepType @default(IMPLEMENTATION)
+
+  verified Boolean @default(false)
+  notes    String? @db.Text
+
+  createdAt DateTime @default(now())
+
+  @@unique([projectId, phaseId, subheading, stepId, stepType])
+  @@index([projectId])
+}
+
+// ===== ENUMS =====
+enum TrackType {
+  SPEED      // 7-day fast track
+  PRODUCTION // 60-day production
+  ENTERPRISE // 120-day enterprise
+}
+
+enum BudgetTier {
+  LOW    // <$50/mo
+  MEDIUM // $50-500/mo
+  HIGH   // $500+/mo
+}
+
+enum StepType {
+  IMPLEMENTATION
+  TESTING
+  VERIFICATION
+}
